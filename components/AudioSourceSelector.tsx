@@ -42,8 +42,8 @@ export const AudioSourceSelector: React.FC<AudioSourceSelectorProps> = ({ onSele
           >
             <SystemAudioIcon className="w-10 h-10 mr-5 text-pink-400" />
             <div>
-              <h3 className="text-lg font-semibold text-white">Dźwięk systemowy / z karty</h3>
-              <p className="text-sm text-gray-400">Przechwytuj dźwięk odtwarzany na komputerze (np. z gry, muzyki).</p>
+              <h3 className="text-lg font-semibold text-white">Dźwięk z Komputera (Słuchawki/Głośniki)</h3>
+              <p className="text-sm text-gray-400">Wizualizuj dźwięk, który słyszysz (np. z YouTube, Spotify, gier). Przeglądarka poprosi o udostępnienie karty lub ekranu w celu przechwycenia dźwięku.</p>
             </div>
           </button>
         </div>
