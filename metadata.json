@@ -1,0 +1,7 @@
+{
+  "name": "Rhythmic Audio Visualizer",
+  "description": "A modern web application that visualizes the rhythm of music captured from your microphone in real-time. Click 'Start' and allow microphone access to see the audio spectrum come to life in a captivating circular display.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
