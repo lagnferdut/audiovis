@@ -16,14 +16,10 @@ export const useAudioAnalyzer = (): AudioAnalyzerResult => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const videoTrackRef = useRef<MediaStreamTrack | null>(null);
 
   const stop = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
-    }
-    if (videoTrackRef.current) {
-        videoTrackRef.current.stop();
     }
     if (sourceNodeRef.current) {
       sourceNodeRef.current.disconnect();
@@ -35,7 +31,6 @@ export const useAudioAnalyzer = (): AudioAnalyzerResult => {
     audioContextRef.current = null;
     streamRef.current = null;
     sourceNodeRef.current = null;
-    videoTrackRef.current = null;
   }, []);
 
   const start = useCallback(async (sourceType: AudioSourceType) => {
@@ -47,7 +42,7 @@ export const useAudioAnalyzer = (): AudioAnalyzerResult => {
         throw new Error('Twoja przeglądarka nie obsługuje Media Devices API.');
       }
 
-      let stream;
+      let stream: MediaStream;
       if (sourceType === 'mic') {
         if (!navigator.mediaDevices.getUserMedia) {
             throw new Error('Twoja przeglądarka nie obsługuje Web Audio API (getUserMedia).');
@@ -63,13 +58,13 @@ export const useAudioAnalyzer = (): AudioAnalyzerResult => {
         });
         
         if (displayStream.getAudioTracks().length === 0) {
-            displayStream.getVideoTracks().forEach(track => track.stop());
-            throw new Error('Nie udostępniono dźwięku systemowego. Spróbuj ponownie i zaznacz opcję udostępniania dźwięku.');
+            displayStream.getTracks().forEach(track => track.stop());
+            throw new Error('Nie udostępniono dźwięku systemowego. Spróbuj ponownie. Wskazówka: Najpewniejszym sposobem jest wybranie konkretnej karty przeglądarki (np. z YouTube) i upewnienie się, że pole "Udostępnij dźwięk karty" jest zaznaczone. Udostępnianie całego ekranu może nie przechwycić dźwięku w niektórych systemach.');
         }
-
-        // Zapisujemy ścieżkę wideo, aby ją później zatrzymać, ale tworzymy nowy strumień tylko z audio
-        videoTrackRef.current = displayStream.getVideoTracks()[0];
-        stream = new MediaStream(displayStream.getAudioTracks());
+        
+        // MediaStreamSource poprawnie obsłuży strumień z audio i wideo, ignorując wideo.
+        // Przechowujemy cały strumień, aby móc go później w całości zatrzymać.
+        stream = displayStream;
       }
       
       streamRef.current = stream;
