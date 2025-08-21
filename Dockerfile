@@ -1,16 +1,28 @@
-# 1. Obraz bazowy - system operacyjny z zainstalowanym Node.js
-FROM node:20-slim
+# --- ETAP 1: Budowanie aplikacji ---
+FROM node:20-slim AS builder
 
-# 2. Ustawienie katalogu roboczego wewnątrz kontenera
+# Ustawienie katalogu roboczego
 WORKDIR /app
 
-# 3. Kopiowanie plików z zależnościami i ich instalacja
+# Kopiowanie plików package.json i instalacja wszystkich zależności
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install
 
-# 4. Kopiowanie reszty kodu aplikacji
+# Kopiowanie reszty kodu aplikacji
 COPY . .
 
-# 5. Uruchomienie aplikacji
-# Zmień "server.js" na plik startowy Twojej aplikacji
-CMD [ "node", "server.js" ]
+# Uruchomienie skryptu budującego, który tworzy folder /dist
+RUN npm run build
+
+
+# --- ETAP 2: Serwowanie zbudowanych plików ---
+FROM nginx:stable-alpine
+
+# Kopiowanie zoptymalizowanych plików z etapu budowania do folderu serwera Nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Informacja, że serwer będzie działał na porcie 80
+EXPOSE 80
+
+# Komenda uruchamiająca serwer Nginx
+CMD ["nginx", "-g", "daemon off;"]
